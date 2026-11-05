@@ -20,11 +20,11 @@ export default function Rechner() {
           <Kennzahl wert={menge(teigGesamt)} label="Teig gesamt" />
           <Kennzahl wert={menge(mehlGesamt)} label="Mehl" />
         </div>
-        {ballen > pizzen && (
-          <div className="mt-2 text-center text-xs text-tomato-100">
-            ergibt {ballen} Ballen · {ballen - pizzen} als Reserve
-          </div>
-        )}
+        {/* immer vorhanden, damit die Box ihre Höhe behält */}
+        <div className="mt-2 h-4 truncate text-center text-xs leading-4 text-tomato-100">
+          {ballen} Ballen à {gramm(plan.ballengewicht)}
+          {ballen > pizzen && ` · ${ballen - pizzen} als Reserve`}
+        </div>
       </div>
 
       <Card title="Gäste">
@@ -258,7 +258,7 @@ function TeigBlock({
 function Kennzahl({ wert, label }: { wert: string; label: string }) {
   return (
     <div className="text-center">
-      <div className="text-xl leading-tight font-bold tabular-nums sm:text-2xl">{wert}</div>
+      <div className="text-xl leading-tight font-bold whitespace-nowrap tabular-nums sm:text-2xl">{wert}</div>
       <div className="text-xs text-tomato-100">{label}</div>
     </div>
   )

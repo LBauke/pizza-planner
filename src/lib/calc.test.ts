@@ -81,6 +81,10 @@ describe('Mehrere Teige', () => {
     const plan = { ...START_PLAN, personen: 11, teigAuswahl: { hybrid: 1, neapel48: 1 } }
     expect(pizzenJeTeig(plan, START_TEIGE)).toEqual({ hybrid: 6, neapel48: 5 })
   })
+  it('ein einzelner Teig bekommt alle Pizzen, auch bei manueller Verteilung', () => {
+    const plan = { ...START_PLAN, personen: 12, teigAuto: false, teigAuswahl: { hybrid: 1 } }
+    expect(pizzenJeTeig(plan, START_TEIGE)).toEqual({ hybrid: 12 })
+  })
   it('manuelle Anzahl je Teig', () => {
     const plan = { ...START_PLAN, teigAuto: false, teigAuswahl: { biga: 4, hybrid: 8 } }
     expect(pizzenJeTeig(plan, START_TEIGE)).toEqual({ hybrid: 8, biga: 4 })

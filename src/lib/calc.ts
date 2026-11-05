@@ -96,9 +96,11 @@ export function pizzenJeKreation(plan: Plan, kreationen: Kreation[]): Record<str
   return verteileAuswahl(plan.auswahl, plan.autoVerteilung, kreationen.map((k) => k.id), anzahlPizzen(plan))
 }
 
-/** Anzahl Pizzen (Teigballen) je ausgewähltem Teig. */
+/** Anzahl Pizzen (Teigballen) je ausgewähltem Teig. Ein einzelner Teig bekommt immer alle Pizzen. */
 export function pizzenJeTeig(plan: Plan, teige: Teigrezept[]): Record<string, number> {
-  return verteileAuswahl(plan.teigAuswahl, plan.teigAuto, teige.map((t) => t.id), anzahlPizzen(plan))
+  const ids = teige.map((t) => t.id)
+  const einzeln = ids.filter((id) => id in plan.teigAuswahl).length === 1
+  return verteileAuswahl(plan.teigAuswahl, plan.teigAuto || einzeln, ids, anzahlPizzen(plan))
 }
 
 export function berechneToppings(kreationen: Kreation[], anzahl: Record<string, number>): Posten[] {
