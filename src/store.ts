@@ -9,6 +9,7 @@ import {
 } from './data/defaults'
 import { imKatalog } from './data/katalog'
 import { abbuchen } from './lib/calc'
+import { migriere } from './lib/migration'
 import type { GespeichertePlanung, Kategorie, Kreation, Plan, Posten, Teigrezept, Zutat } from './types'
 
 export const neueId = () =>
@@ -139,7 +140,11 @@ export const useStore = create<State>()(
         }),
       planungLoeschen: (id) => set((s) => ({ planungen: s.planungen.filter((p) => p.id !== id) })),
     }),
-    { name: 'pizza-planner', version: 1 },
+    {
+      name: 'pizza-planner',
+      version: 2,
+      migrate: (persisted, version) => migriere(persisted as State, version),
+    },
   ),
 )
 
