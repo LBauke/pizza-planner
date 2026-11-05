@@ -150,8 +150,8 @@ Planung      { id, name, datum, personen, pizzenProPerson, puffer,
 | Phase | Status |
 |---|---|
 | 0–6 | erledigt: Rechner, Rezepte (Pizzen + Teige mit Stufen), Einkaufsliste, Bestand mit Abbuchen, gespeicherte Planungen, 14 Tests für die Rechenlogik |
-| 7 | teilweise: im Browser in Handy-Größe getestet. Veröffentlichung auf GitHub Pages fehlt noch (Workflow liegt in `.github/workflows/deploy.yml`) |
-| 8 | offen: Ideen-Generator |
+| 7 | erledigt: veröffentlicht auf https://lbauke.github.io/pizza-planner/ (automatisch bei jedem Push auf `main`) |
+| 8 | erledigt: Ideen-Generator unter Rezepte → Ideen. Eingebauter Katalog mit ca. 55 Zutaten (`src/data/katalog.ts`), Filter „Vegetarisch“ und „Nur meine Zutaten“, Tauschen einzelner Zutaten, Übernahme als Pizza |
 
 Lokal starten: `npm install`, danach `npm run dev`
 

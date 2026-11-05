@@ -7,6 +7,7 @@ import {
   START_TEIGE,
   START_ZUTATEN,
 } from './data/defaults'
+import { imKatalog } from './data/katalog'
 import { abbuchen } from './lib/calc'
 import type { GespeichertePlanung, Kategorie, Kreation, Plan, Posten, Teigrezept, Zutat } from './types'
 
@@ -76,7 +77,7 @@ export const useStore = create<State>()(
         const n = name.trim()
         const vorhanden = get().zutaten.find((z) => z.name.toLowerCase() === n.toLowerCase())
         if (vorhanden) return vorhanden.id
-        const kat: Kategorie = /mehl/i.test(n) ? 'mehl' : kategorie
+        const kat: Kategorie = /mehl/i.test(n) ? 'mehl' : (imKatalog(n)?.kategorie ?? kategorie)
         const z: Zutat = { id: neueId(), name: n, kategorie: kat }
         set((s) => ({ zutaten: [...s.zutaten, z] }))
         return z.id

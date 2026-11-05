@@ -4,9 +4,11 @@ import { baeckerprozent } from '../lib/calc'
 import { gramm, prozent } from '../lib/format'
 import { neueId, useStore, useZutatName } from '../store'
 import type { Kategorie, Kreation, Posten, Teigrezept } from '../types'
+import Ideen from './Ideen'
 
 export default function Rezepte() {
-  const [tab, setTab] = useState<'pizzen' | 'teige'>('pizzen')
+  const [tab, setTab] = useState<'pizzen' | 'teige' | 'ideen'>('pizzen')
+  const [uebernommen, setUebernommen] = useState<string | null>(null)
   return (
     <div className="space-y-4">
       <Segment
@@ -15,9 +17,19 @@ export default function Rezepte() {
         optionen={[
           { wert: 'pizzen', label: 'Pizzen' },
           { wert: 'teige', label: 'Teige' },
+          { wert: 'ideen', label: 'Ideen' },
         ]}
       />
-      {tab === 'pizzen' ? <PizzaListe /> : <TeigListe />}
+      {tab === 'pizzen' && <PizzaListe startOffen={uebernommen} />}
+      {tab === 'teige' && <TeigListe />}
+      {tab === 'ideen' && (
+        <Ideen
+          onUebernommen={(id) => {
+            setUebernommen(id)
+            setTab('pizzen')
+          }}
+        />
+      )}
     </div>
   )
 }
@@ -85,10 +97,10 @@ function Eintrag({ titel, untertitel, offen, onToggle, children }: { titel: stri
 
 /* ---------- Pizzen ---------- */
 
-function PizzaListe() {
+function PizzaListe({ startOffen }: { startOffen: string | null }) {
   const { kreationen, upsertKreation, deleteKreation } = useStore()
   const name = useZutatName()
-  const [offen, setOffen] = useState<string | null>(null)
+  const [offen, setOffen] = useState<string | null>(startOffen)
   return (
     <div className="space-y-3">
       <p className="px-1 text-sm text-stone-500">Toppingmengen pro Pizza (30 cm).</p>
