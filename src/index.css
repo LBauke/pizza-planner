@@ -1,0 +1,24 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-tomato-50: #fdf1ee;
+  --color-tomato-100: #fbe0d9;
+  --color-tomato-200: #f6bfb1;
+  --color-tomato-500: #e8502f;
+  --color-tomato-600: #d13f20;
+  --color-tomato-700: #ae3218;
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+html,
+body {
+  background: var(--color-stone-50);
+  color: var(--color-stone-800);
+  -webkit-tap-highlight-color: transparent;
+}
+
+input,
+select,
+textarea {
+  font-size: 16px; /* verhindert Auto-Zoom auf iOS */
+}
