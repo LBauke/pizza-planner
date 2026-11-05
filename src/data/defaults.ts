@@ -2,7 +2,6 @@ import type { Kreation, Plan, Teigrezept, Zutat } from '../types'
 
 export const START_ZUTATEN: Zutat[] = [
   { id: 'mehl', name: 'Pizzamehl', kategorie: 'mehl' },
-  { id: 'mehl00', name: 'Weizenmehl Type 00', kategorie: 'mehl' },
   { id: 'wasser', name: 'Wasser (kalt)', kategorie: 'teig' },
   { id: 'oel', name: 'Olivenöl', kategorie: 'teig' },
   { id: 'salz', name: 'Salz', kategorie: 'teig' },
@@ -12,7 +11,6 @@ export const START_ZUTATEN: Zutat[] = [
   { id: 'basilikum', name: 'Frisches Basilikum', kategorie: 'finish' },
 ]
 
-export const MEHL_00: Zutat = { id: 'mehl00', name: 'Weizenmehl Type 00', kategorie: 'mehl' }
 
 /** Quelle: „Biga Pizzateig – Darum wird der Teig so luftig!“, Teichners Pizza Palace (YouTube ZYAQc1zuey4) */
 const BIGA: Teigrezept = {
@@ -23,7 +21,7 @@ const BIGA: Teigrezept = {
     {
       name: 'Biga (Vorteig)',
       zutaten: [
-        { zutatId: 'mehl00', menge: 1000 },
+        { zutatId: 'mehl', menge: 1000 },
         { zutatId: 'wasser', menge: 450 },
         { zutatId: 'hefe', menge: 3 },
       ],
@@ -59,7 +57,7 @@ const NEAPEL48: Teigrezept = {
     {
       name: '',
       zutaten: [
-        { zutatId: 'mehl00', menge: 1000 },
+        { zutatId: 'mehl', menge: 1000 },
         { zutatId: 'wasser', menge: 700 },
         { zutatId: 'salz', menge: 30 },
         { zutatId: 'hefe', menge: 2.5 },
@@ -67,7 +65,7 @@ const NEAPEL48: Teigrezept = {
     },
   ],
   schritte: [
-    'Mehl und Hefe in die Knetmaschine geben (optional 800 g Type 00 + 200 g Type 1 für mehr Aroma).',
+    'Mehl und Hefe in die Knetmaschine geben.',
     '50 % des kalten Wassers zugeben und kneten.',
     'Sobald das Mehl das Wasser gebunden hat, schluckweise weiteres Wasser zugeben.',
     'Nach ca. 3 Min. das restliche Wasser zugeben, die Geschwindigkeit um ca. 20 % erhöhen, dann das Salz zugeben.',
@@ -157,7 +155,10 @@ export const START_PLAN: Plan = {
   pizzenProPerson: 1,
   puffer: 0,
   ballengewicht: 280,
-  teigId: 'hybrid',
+  teigAuswahl: { hybrid: 10 },
+  teigAuto: true,
+  mehlRunden: false,
+  mehlSchritt: 1000,
   auswahl: { margherita: 10 },
   autoVerteilung: true,
 }

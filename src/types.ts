@@ -59,7 +59,12 @@ export interface Plan {
   /** Sicherheitsaufschlag in Prozent */
   puffer: number
   ballengewicht: number
-  teigId: string
+  /** ausgewählte Teige → Anzahl Pizzen (nur bei manueller Verteilung relevant) */
+  teigAuswahl: Record<string, number>
+  teigAuto: boolean
+  /** Mehl je Teig auf feste Schritte aufrunden (z. B. 1000 g = ein Knetvorgang) */
+  mehlRunden: boolean
+  mehlSchritt: number
   /** ausgewählte Kreationen → Anzahl Pizzen (nur bei manueller Verteilung relevant) */
   auswahl: Record<string, number>
   autoVerteilung: boolean

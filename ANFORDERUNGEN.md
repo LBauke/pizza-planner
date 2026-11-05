@@ -155,6 +155,12 @@ Planung      { id, name, datum, personen, pizzenProPerson, puffer,
 
 Lokal starten: `npm install`, danach `npm run dev`
 
+### Ergänzungen (05.11.2026)
+
+- **Ein Pizzamehl** für alle Teigrezepte. „Weizenmehl Type 00“ aus den Video-Rezepten wurde durch „Pizzamehl“ ersetzt, Bestände wurden zusammengeführt.
+- **Mehl in festen Schritten:** optional wird das Mehl je Teig auf volle Schritte aufgerundet (Standard 1000 g = ein Knetvorgang). Die übrigen Zutaten skalieren mit, zusätzliche Ballen werden als Reserve angezeigt.
+- **Mehrere Teige pro Planung:** Im Rechner lassen sich mehrere Teige gleichzeitig auswählen. Die Pizzen werden gleichmäßig oder manuell verteilt, jeder Teig wird für sich berechnet, und die Einkaufsliste summiert alles.
+
 ## 9. Offene Punkte
 
 Keine. Weitere Kreationen und die genauen Rezepte für Biga und Neapolitanisch trage ich selbst in der App ein.

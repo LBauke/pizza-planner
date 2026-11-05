@@ -28,32 +28,45 @@ export interface TeigErgebnis {
   /** Mehlmenge der Referenz-Charge – Basis für Bäckerprozent */
   mehlReferenz: number
   durchgaenge: number
+  /** so viele Ballen ergibt die (ggf. aufgerundete) Teigmenge */
+  ballen: number
 }
 
+/**
+ * @param mehlSchritt > 0: Mehl wird auf ein Vielfaches davon aufgerundet (z. B. 1000 g = ein Knetvorgang),
+ *                     die übrigen Zutaten skalieren mit. Mehr Teig → zusätzliche Ballen als Reserve.
+ */
 export function berechneTeig(
   rezept: Teigrezept,
   zutaten: Zutat[],
   pizzen: number,
   ballengewicht: number,
   kapazitaetMehl: number,
+  mehlSchritt = 0,
 ): TeigErgebnis {
   const alle = rezept.stufen.flatMap((s) => s.zutaten)
   const referenz = summe(alle)
-  const teigGesamt = pizzen * ballengewicht
-  const faktor = referenz > 0 ? teigGesamt / referenz : 0
   const istMehl = (id: string) => zutaten.find((z) => z.id === id)?.kategorie === 'mehl'
+  const mehlReferenz = summe(alle.filter((p) => istMehl(p.zutatId)))
+
+  let teigGesamt = pizzen * ballengewicht
+  if (mehlSchritt > 0 && mehlReferenz > 0 && teigGesamt > 0) {
+    const mehl = (teigGesamt * mehlReferenz) / referenz
+    teigGesamt = ((Math.ceil(mehl / mehlSchritt - EPS) * mehlSchritt) * referenz) / mehlReferenz
+  }
+  const faktor = referenz > 0 ? teigGesamt / referenz : 0
 
   const stufen = rezept.stufen.map((s) => ({
     name: s.name,
     zutaten: s.zutaten.map((p) => ({ zutatId: p.zutatId, menge: p.menge * faktor })),
   }))
   const gesamt = zusammenfassen(stufen.flatMap((s) => s.zutaten))
-  const mehlReferenz = summe(alle.filter((p) => istMehl(p.zutatId)))
   const mehlGesamt = mehlReferenz * faktor
   const durchgaenge =
     kapazitaetMehl > 0 && mehlGesamt > kapazitaetMehl + EPS ? Math.ceil(mehlGesamt / kapazitaetMehl - EPS) : 1
+  const ballen = ballengewicht > 0 ? Math.floor(teigGesamt / ballengewicht + EPS) : 0
 
-  return { teigGesamt, stufen, gesamt, mehlGesamt, mehlReferenz, durchgaenge }
+  return { teigGesamt, stufen, gesamt, mehlGesamt, mehlReferenz, durchgaenge, ballen }
 }
 
 /** Bäckerprozent relativ zur Mehlmenge der Referenz-Charge */
@@ -71,11 +84,21 @@ export function verteile(pizzen: number, ids: string[]): Record<string, number> 
   return res
 }
 
+/** Anzahl je ausgewähltem Eintrag: automatisch gleichmäßig oder die manuell eingetragene Anzahl. */
+function verteileAuswahl(auswahl: Record<string, number>, auto: boolean, ids: string[], gesamt: number) {
+  const gewaehlt = ids.filter((id) => id in auswahl)
+  if (auto) return verteile(gesamt, gewaehlt)
+  return Object.fromEntries(gewaehlt.map((id) => [id, Math.max(0, auswahl[id] ?? 0)]))
+}
+
 /** Anzahl Pizzen je ausgewählter Kreation (berücksichtigt Auto-Verteilung). */
 export function pizzenJeKreation(plan: Plan, kreationen: Kreation[]): Record<string, number> {
-  const ids = kreationen.filter((k) => k.id in plan.auswahl).map((k) => k.id)
-  if (plan.autoVerteilung) return verteile(anzahlPizzen(plan), ids)
-  return Object.fromEntries(ids.map((id) => [id, Math.max(0, plan.auswahl[id] ?? 0)]))
+  return verteileAuswahl(plan.auswahl, plan.autoVerteilung, kreationen.map((k) => k.id), anzahlPizzen(plan))
+}
+
+/** Anzahl Pizzen (Teigballen) je ausgewähltem Teig. */
+export function pizzenJeTeig(plan: Plan, teige: Teigrezept[]): Record<string, number> {
+  return verteileAuswahl(plan.teigAuswahl, plan.teigAuto, teige.map((t) => t.id), anzahlPizzen(plan))
 }
 
 export function berechneToppings(kreationen: Kreation[], anzahl: Record<string, number>): Posten[] {

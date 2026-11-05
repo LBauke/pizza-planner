@@ -9,7 +9,7 @@ import {
 } from './data/defaults'
 import { imKatalog } from './data/katalog'
 import { abbuchen } from './lib/calc'
-import { migriere } from './lib/migration'
+import { migriere, normalisierePlan } from './lib/migration'
 import type { GespeichertePlanung, Kategorie, Kreation, Plan, Posten, Teigrezept, Zutat } from './types'
 
 export const neueId = () =>
@@ -29,6 +29,7 @@ interface State {
 
   setPlan: (p: Partial<Plan>) => void
   toggleKreation: (id: string) => void
+  toggleTeig: (id: string) => void
   setKapazitaet: (n: number) => void
 
   /** Sucht eine Zutat per Name (ohne Groß/Klein) oder legt sie an. */
@@ -72,6 +73,13 @@ export const useStore = create<State>()(
           else auswahl[id] = 1
           return { plan: { ...s.plan, auswahl } }
         }),
+      toggleTeig: (id) =>
+        set((s) => {
+          const teigAuswahl = { ...s.plan.teigAuswahl }
+          if (id in teigAuswahl) delete teigAuswahl[id]
+          else teigAuswahl[id] = 1
+          return { plan: { ...s.plan, teigAuswahl } }
+        }),
       setKapazitaet: (n) => set({ kapazitaetMehl: n }),
 
       zutatFuerName: (name, kategorie) => {
@@ -98,8 +106,9 @@ export const useStore = create<State>()(
       deleteTeig: (id) =>
         set((s) => {
           const teige = s.teige.filter((t) => t.id !== id)
-          const teigId = s.plan.teigId === id ? (teige[0]?.id ?? '') : s.plan.teigId
-          return { teige, plan: { ...s.plan, teigId } }
+          const teigAuswahl = { ...s.plan.teigAuswahl }
+          delete teigAuswahl[id]
+          return { teige, plan: { ...s.plan, teigAuswahl } }
         }),
       upsertKreation: (k) =>
         set((s) => ({
@@ -136,13 +145,13 @@ export const useStore = create<State>()(
       planungLaden: (id) =>
         set((s) => {
           const p = s.planungen.find((x) => x.id === id)
-          return p ? { plan: { ...START_PLAN, ...p.plan } } : {}
+          return p ? { plan: normalisierePlan(p.plan) } : {}
         }),
       planungLoeschen: (id) => set((s) => ({ planungen: s.planungen.filter((p) => p.id !== id) })),
     }),
     {
       name: 'pizza-planner',
-      version: 2,
+      version: 3,
       migrate: (persisted, version) => migriere(persisted as State, version),
     },
   ),

@@ -6,7 +6,7 @@ import { useBerechnung } from '../lib/useBerechnung'
 import { useStore, useZutatName } from '../store'
 
 export default function Einkauf() {
-  const { liste, pizzen, teigErg, toppings } = useBerechnung()
+  const { liste, pizzen, teigPosten, toppings } = useBerechnung()
   const { resetAbgehakt, verbrauchAbbuchen } = useStore()
   const [bestaetigen, setBestaetigen] = useState(false)
   const [erledigt, setErledigt] = useState(false)
@@ -41,7 +41,7 @@ export default function Einkauf() {
               <Button
                 className="flex-1"
                 onClick={() => {
-                  verbrauchAbbuchen(zusammenfassen([...(teigErg?.gesamt ?? []), ...toppings]))
+                  verbrauchAbbuchen(zusammenfassen([...teigPosten, ...toppings]))
                   setBestaetigen(false)
                   setErledigt(true)
                   setTimeout(() => setErledigt(false), 3000)

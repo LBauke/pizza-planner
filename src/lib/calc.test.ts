@@ -8,7 +8,9 @@ import {
   berechneToppings,
   einkaufsliste,
   pizzenJeKreation,
+  pizzenJeTeig,
   verteile,
+  zusammenfassen,
 } from './calc'
 import { gramm, menge, parseZahl } from './format'
 
@@ -53,6 +55,42 @@ describe('berechneTeig (Hybrid)', () => {
     const r = berechneTeig(START_TEIGE[1], START_ZUTATEN, 6, 280, 6000)
     expect(r.gesamt.filter((p) => p.zutatId === 'wasser')).toHaveLength(1)
     expect(r.stufen).toHaveLength(2)
+  })
+})
+
+describe('Mehl in festen Schritten', () => {
+  it('rundet auf volle kg Mehl auf und ergibt Reserve-Ballen', () => {
+    // 10 Pizzen Hybrid brauchen 1.663 g Mehl → 2.000 g
+    const r = berechneTeig(hybrid, START_ZUTATEN, 10, 280, 6000, 1000)
+    expect(r.mehlGesamt).toBeCloseTo(2000, 6)
+    expect(g(r.gesamt, 'wasser')).toBeCloseTo(1240, 6)
+    expect(r.ballen).toBe(12)
+  })
+  it('genau 1 kg bleibt 1 kg', () => {
+    const r = berechneTeig(hybrid, START_ZUTATEN, 6, 280, 6000, 1000)
+    expect(r.mehlGesamt).toBeCloseTo(1000, 6)
+    expect(r.ballen).toBe(6)
+  })
+  it('ohne Schritt keine Rundung', () => {
+    expect(berechneTeig(hybrid, START_ZUTATEN, 10, 280, 6000, 0).ballen).toBe(10)
+  })
+})
+
+describe('Mehrere Teige', () => {
+  it('verteilt Pizzen gleichmäßig auf ausgewählte Teige', () => {
+    const plan = { ...START_PLAN, personen: 11, teigAuswahl: { hybrid: 1, neapel48: 1 } }
+    expect(pizzenJeTeig(plan, START_TEIGE)).toEqual({ hybrid: 6, neapel48: 5 })
+  })
+  it('manuelle Anzahl je Teig', () => {
+    const plan = { ...START_PLAN, teigAuto: false, teigAuswahl: { biga: 4, hybrid: 8 } }
+    expect(pizzenJeTeig(plan, START_TEIGE)).toEqual({ hybrid: 8, biga: 4 })
+  })
+  it('Mehl aller Teige wird in der Einkaufsliste zusammengezählt', () => {
+    const a = berechneTeig(START_TEIGE[0], START_ZUTATEN, 6, 280, 6000)
+    const b = berechneTeig(START_TEIGE[2], START_ZUTATEN, 6, 280, 6000)
+    const liste = einkaufsliste(zusammenfassen([...a.gesamt, ...b.gesamt]), [], {})
+    expect(liste.teig.filter((z) => z.zutatId === 'mehl')).toHaveLength(1)
+    expect(g(liste.teig.map((z) => ({ zutatId: z.zutatId, menge: z.bedarf })), 'mehl')).toBeCloseTo(a.mehlGesamt + b.mehlGesamt, 6)
   })
 })
 
